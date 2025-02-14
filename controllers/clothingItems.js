@@ -1,6 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
 
-// GET /items — returns all clothing items
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
@@ -11,11 +10,9 @@ const getItems = (req, res) => {
     );
 };
 
-// POST /items — creates a new item
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
-  // Note: You'll need to implement user authentication and get the actual user ID
   const owner = "placeholder_user_id";
 
   ClothingItem.create({ name, weather, imageUrl, owner })
@@ -32,12 +29,13 @@ const createItem = (req, res) => {
     });
 };
 
-// DELETE /items/:itemId — deletes an item by _id
 const deleteItem = (req, res) => {
   ClothingItem.findByIdAndRemove(req.params.itemId)
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res
+          .status(404)
+          .send({ message: "Requested resource not found" });
       }
       res.send({ message: "Item deleted" });
     })
