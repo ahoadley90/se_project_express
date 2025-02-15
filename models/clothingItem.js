@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 
 const clothingItemSchema = new mongoose.Schema({
   name: {
@@ -17,8 +16,8 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (value) => validator.isURL(value),
-      message: "You must enter a valid URL",
+      validator: (v) => /^(http|https):\/\/[^ "]+$/.test(v),
+      message: "Invalid URL format",
     },
   },
   owner: {
@@ -30,7 +29,6 @@ const clothingItemSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: [],
     },
   ],
   createdAt: {

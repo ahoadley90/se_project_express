@@ -3,12 +3,14 @@ const {
   BAD_REQUEST,
   NOT_FOUND,
   INTERNAL_SERVER_ERROR,
+  CREATED,
+  OK,
 } = require("../utils/errors");
 
 // Get all items
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.send(items))
+    .then((items) => res.status(OK).send(items))
     .catch((err) => {
       console.error(err);
       res
@@ -26,7 +28,7 @@ const getItemById = (req, res) => {
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => res.send(item))
+    .then((item) => res.status(OK).send(item))
     .catch((err) => {
       console.error(err);
       if (err.statusCode === NOT_FOUND) {
@@ -42,19 +44,22 @@ const getItemById = (req, res) => {
 };
 
 // Create a new clothing item
-const createClothingItem = (req, res) => {
+const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
+  const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageUrl })
-    .then((item) => res.status(201).send(item))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: "Invalid data" });
+  ClothingItem.create({ name, weather, imageUrl, owner })
+    .then((item) => {
+      res.status(CREATED).send(item);
+    })
+    .catch((e) => {
+      if (e.name === "ValidationError") {
+        res.status(BAD_REQUEST).send({ message: "Invalid data" });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: "An error occurred on the server" });
       }
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -62,13 +67,13 @@ const createClothingItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndRemove(itemId)
+  ClothingItem.findByIdAndDelete(itemId)
     .orFail(() => {
       const error = new Error("Item not found");
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => res.send(item))
+    .then((item) => res.status(OK).send(item))
     .catch((err) => {
       console.error(err);
       if (err.statusCode === NOT_FOUND) {
@@ -97,7 +102,7 @@ const likeItem = (req, res) => {
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => res.send(item))
+    .then((item) => res.status(OK).send(item))
     .catch((err) => {
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
@@ -128,7 +133,7 @@ const dislikeItem = (req, res) => {
       error.statusCode = NOT_FOUND;
       throw error;
     })
-    .then((item) => res.send(item))
+    .then((item) => res.status(OK).send(item))
     .catch((err) => {
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
@@ -148,7 +153,7 @@ const dislikeItem = (req, res) => {
 module.exports = {
   getItems,
   getItemById,
-  createClothingItem,
+  createItem,
   deleteItem,
   likeItem,
   dislikeItem,
