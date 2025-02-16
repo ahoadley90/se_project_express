@@ -21,5 +21,9 @@ module.exports = {
   },
   rules: {
     "no-underscore-dangle": ["error", { allow: ["_id"] }],
+    "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
+    "consistent-return": "off",
+    "no-console": ["error", { allow: ["error"] }],
+    "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
   },
 };

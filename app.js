@@ -9,17 +9,23 @@ const { PORT = 3001 } = process.env;
 
 const app = express();
 
-mongoose
-  .connect("mongodb://localhost:27017/wtwr_db", {
+//prettier-ignore
+mongoose.connect("mongodb://localhost:27017/wtwr_db", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to MongoDB"))
+  .then(() => console.error("Connected to MongoDB"))
   .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 app.use(express.json());
 app.use(cors());
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: "5d8b8592978f8bd833ca8133",
+  };
+  next();
+});
 app.use(routes);
 
 app.use((req, res) => {
@@ -27,5 +33,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening at port ${PORT}`);
+  console.error(`App listening at port ${PORT}`);
 });
