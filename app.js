@@ -4,23 +4,23 @@ const cors = require("cors");
 const { createUser, login } = require("./controllers/users");
 const userRouter = require("./routes/users");
 const clothingItemRouter = require("./routes/clothingItems");
+const auth = require("./middlewares/auth");
 
 const { PORT = 3001 } = process.env;
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect("mongodb://localhost:27017/wtwr_db");
 
 app.use(express.json());
 app.use(cors());
 
-//routes for signup and signin
+// Unprotected routes
 app.post("/signup", createUser);
 app.post("/signin", login);
+app.get("/items", clothingItemRouter);
 
-// Use routers
+// Protected routes
+app.use(auth); // Apply auth middleware to all routes below this line
 app.use("/users", userRouter);
 app.use("/items", clothingItemRouter);
 
