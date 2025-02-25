@@ -8,22 +8,19 @@ const createUser = (req, res) => {
 
   bcrypt
     .hash(password, 10)
-    .then((hash) =>
-      User.create({
-        name,
-        avatar,
-        email,
-        password: hash,
-      })
-    )
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
-      const userResponse = user.toObject();
-      delete userResponse.password;
-      res.status(201).send(userResponse);
+      res.status(201).send({
+        name: user.name,
+        avatar: user.avatar,
+        email: user.email,
+        _id: user._id,
+      });
     })
     .catch((err) => {
+      console.error(err); // Log the error for debugging
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Invalid data passed to the methods" });
+        res.status(400).send({ message: "Invalid data provided" });
       } else if (err.code === 11000) {
         res.status(409).send({ message: "Email already exists" });
       } else {

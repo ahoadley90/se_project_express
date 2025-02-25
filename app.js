@@ -9,7 +9,13 @@ const auth = require("./middleware/auth");
 const { PORT = 3001 } = process.env;
 const app = express();
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db");
+// prettier-ignore
+mongoose.connect("mongodb://localhost:27017/wtwr_db", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 app.use(express.json());
 app.use(cors());
@@ -28,16 +34,13 @@ app.use((req, res) => {
   res.status(404).send({ message: "Requested resource not found" });
 });
 
-app
-  .listen(PORT, () => {
-    console.log(`App listening at port ${PORT}`);
-    console.log("This is working");
-  })
-  .on("error", (err) => {
-    if (err.code === "EADDRINUSE") {
-      console.log(`Port ${PORT} is already in use. Trying ${PORT + 1}...`);
-      app.listen(PORT + 1);
-    } else {
-      console.error("An error occurred:", err);
-    }
-  });
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send({ message: "An error occurred on the server" });
+});
+
+app.listen(PORT, () => {
+  console.log(`App listening at port ${PORT}`);
+  console.log("This is working");
+});
