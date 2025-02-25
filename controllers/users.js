@@ -51,4 +51,19 @@ const login = (req, res) => {
     });
 };
 
-module.exports = { createUser, login };
+const getCurrentUser = (req, res) => {
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      res.status(500).send({ message: "An error occurred on the server" });
+    });
+};
+
+module.exports = { createUser, login, getCurrentUser };

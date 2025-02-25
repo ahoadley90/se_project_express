@@ -31,4 +31,11 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
   console.log("This is working");
+}).on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`Port ${PORT} is already in use. Trying ${PORT + 1}...`);
+    app.listen(PORT + 1);
+  } else {
+    console.error('An error occurred:', err);
+  }
 });
