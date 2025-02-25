@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -40,6 +42,7 @@ app.use((err, req, res, next) => {
   res.status(500).send({ message: "An error occurred on the server" });
 });
 
+// eslint-disable no-console
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
   console.log("This is working");

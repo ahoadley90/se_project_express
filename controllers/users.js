@@ -18,11 +18,8 @@ const createUser = (req, res) => {
       });
     })
     .catch((err) => {
-      console.error(err); // Log the error for debugging
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: "Invalid data provided" });
-      } else if (err.code === 11000) {
-        res.status(409).send({ message: "Email already exists" });
+        res.status(400).send({ message: "Invalid data" });
       } else {
         res.status(500).send({ message: "An error occurred on the server" });
       }
@@ -54,7 +51,7 @@ const getCurrentUser = (req, res) => {
       }
       res.send(user);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({ message: "An error occurred on the server" });
     });
 };
