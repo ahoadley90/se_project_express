@@ -4,7 +4,7 @@ const cors = require("cors");
 const { createUser, login } = require("./controllers/users");
 const userRouter = require("./routes/users");
 const clothingItemRouter = require("./routes/clothingItems");
-const auth = require("./middlewares/auth");
+const auth = require("./middleware/auth");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -28,14 +28,16 @@ app.use((req, res) => {
   res.status(404).send({ message: "Requested resource not found" });
 });
 
-app.listen(PORT, () => {
-  console.log(`App listening at port ${PORT}`);
-  console.log("This is working");
-}).on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`Port ${PORT} is already in use. Trying ${PORT + 1}...`);
-    app.listen(PORT + 1);
-  } else {
-    console.error('An error occurred:', err);
-  }
-});
+app
+  .listen(PORT, () => {
+    console.log(`App listening at port ${PORT}`);
+    console.log("This is working");
+  })
+  .on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.log(`Port ${PORT} is already in use. Trying ${PORT + 1}...`);
+      app.listen(PORT + 1);
+    } else {
+      console.error("An error occurred:", err);
+    }
+  });

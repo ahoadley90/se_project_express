@@ -5,6 +5,7 @@ const {
   INTERNAL_SERVER_ERROR,
   CREATED,
   OK,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 // Get all items
@@ -66,19 +67,28 @@ const createItem = (req, res) => {
 // Delete a clothing item
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
+  const userId = req.user._id;
 
-  ClothingItem.findByIdAndDelete(itemId)
-    .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = NOT_FOUND;
-      throw error;
+  ClothingItem.findById(itemId)
+    .then((item) => {
+      if (!item) {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      if (item.owner.toString() !== userId.toString()) {
+        return res
+          .status(FORBIDDEN)
+          .send({ message: "You don't have permission to delete this item" });
+      }
+      return ClothingItem.findByIdAndRemove(itemId);
     })
-    .then((item) => res.status(OK).send(item))
+    .then((deletedItem) => {
+      if (!deletedItem) {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      res.status(OK).send({ message: "Item deleted successfully" });
+    })
     .catch((err) => {
       console.error(err);
-      if (err.statusCode === NOT_FOUND) {
-        return res.status(NOT_FOUND).send({ message: err.message });
-      }
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }

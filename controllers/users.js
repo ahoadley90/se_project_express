@@ -13,17 +13,13 @@ const createUser = (req, res) => {
         name,
         avatar,
         email,
-        password: hash, // store the hashed password
+        password: hash,
       })
     )
     .then((user) => {
-      // Don't send the password back in the response
-      res.status(201).send({
-        name: user.name,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
-      });
+      const userResponse = user.toObject();
+      delete userResponse.password;
+      res.status(201).send(userResponse);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -66,4 +62,28 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-module.exports = { createUser, login, getCurrentUser };
+const updateProfile = (req, res) => {
+  const { name, avatar } = req.body;
+  const userId = req.user._id;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: "User not found" });
+      }
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: "Invalid data provided" });
+      } else {
+        res.status(500).send({ message: "An error occurred on the server" });
+      }
+    });
+};
+
+module.exports = { createUser, login, getCurrentUser, updateProfile };

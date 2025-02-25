@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: (v) => validator.isEmail(v),
-      message: "You must enter a valid email address",
+      message: "You must enter a valid email",
     },
   },
   password: {
@@ -49,9 +49,9 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials(
           return Promise.reject(new Error("Incorrect email or password"));
         }
 
-        return user;
+        return user; // now user.password is available
       });
     });
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("user", userSchema);
