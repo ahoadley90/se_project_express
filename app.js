@@ -1,49 +1,38 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console */ //
 
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { createUser, login } = require("./controllers/users");
-const userRouter = require("./routes/users");
-const clothingItemRouter = require("./routes/clothingItems");
-const auth = require("./middleware/auth");
+const { errors } = require("celebrate");
+const routes = require("./routes");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
-const { PORT = 3001 } = process.env;
 const app = express();
+const { PORT = 3001 } = process.env;
 
-// prettier-ignore
 mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.error("Error connecting to MongoDB:", error));
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-// Unprotected routes
-app.post("/signup", createUser);
-app.post("/signin", login);
-app.get("/items", clothingItemRouter);
+app.use(requestLogger);
 
-// Protected routes
-app.use(auth); // Apply auth middleware to all routes below this line
-app.use("/users", userRouter);
-app.use("/items", clothingItemRouter);
+// Use the routes from the index.js file
+app.use("/", routes);
 
-app.use((req, res) => {
-  res.status(404).send({ message: "Requested resource not found" });
-});
+app.use(errorLogger);
+app.use(errors());
 
-// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ message: "An error occurred on the server" });
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({
+    message: statusCode === 500 ? "An error occurred on the server" : message,
+  });
 });
 
-// eslint-disable no-console
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
-  console.log("This is working");
 });
