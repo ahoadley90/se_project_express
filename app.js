@@ -1,7 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 const auth = require("./middlewares/auth");
 const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require("./utils/errors");
@@ -12,11 +11,12 @@ const clothingItemRouter = require("./routes/clothingItems");
 
 const app = express();
 
-// Connect to MongoDB
+//prettier-ignore
 mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+    useNewUrlParser: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((error) => console.error("Error connecting to MongoDB:", error));
 
 // Middleware
 app.use(cors());
@@ -27,10 +27,10 @@ app.use(requestLogger);
 app.post("/signup", createUser);
 app.post("/signin", login);
 
-// Protected routes
-app.use(auth);
-app.use("/users", usersRouter);
+// Use the router for /items, which includes the public GET route
 app.use("/items", clothingItemRouter);
+// Protected routes
+app.use("/users", auth, usersRouter);
 
 // 404 handler for undefined routes
 app.use((req, res) => {
@@ -39,19 +39,21 @@ app.use((req, res) => {
 
 // Error handling
 app.use(errorLogger);
-app.use(errors());
 
 // Custom error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res
-    .status(INTERNAL_SERVER_ERROR)
-    .send({ message: "An error occurred on the server" });
+  console.error(err);
+  const { statusCode = INTERNAL_SERVER_ERROR, message } = err;
+  res.status(statusCode).send({
+    message:
+      statusCode === INTERNAL_SERVER_ERROR
+        ? "An error occurred on the server"
+        : message,
+  });
 });
 
 const { PORT = 3001 } = process.env;
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
   console.log(`App listening at port ${PORT}`);
 });
