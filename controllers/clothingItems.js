@@ -5,13 +5,13 @@ const {
   BAD_REQUEST,
   CREATED,
   OK,
-} = require("../utils/constants");
+} = require("../utils/errors");
 
 // Get all clothing items
 const getClothingItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(OK).send(items))
-    .catch((e) => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
+    .catch(() => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
 };
 
 // Create a new clothing item
@@ -20,7 +20,7 @@ const createClothingItem = (req, res) => {
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => res.status(CREATED).send(item))
-    .catch((e) => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
+    .catch(() => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
 };
 
 // Delete a clothing item
@@ -46,7 +46,7 @@ const deleteClothingItem = (req, res) => {
       }
       res.status(OK).send({ message: "Item deleted" });
     })
-    .catch((e) => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
+    .catch(() => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
 };
 
 // Like an item
@@ -65,7 +65,7 @@ const likeItem = (req, res) => {
       }
       res.status(OK).send(item);
     })
-    .catch((e) => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
+    .catch(() => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
 };
 
 // Unlike an item
@@ -84,7 +84,7 @@ const unlikeItem = (req, res) => {
       }
       res.status(OK).send(item);
     })
-    .catch((e) => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
+    .catch(() => res.status(BAD_REQUEST).send({ message: "Error occurred" }));
 };
 
 module.exports = {

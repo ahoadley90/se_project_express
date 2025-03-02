@@ -6,6 +6,7 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const auth = require("./middlewares/auth");
 const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require("./utils/errors");
 
+const { createUser, login } = require("./controllers/users");
 const usersRouter = require("./routes/users");
 const clothingItemRouter = require("./routes/clothingItems");
 
@@ -22,9 +23,12 @@ app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
-app.use(auth);
+// Public routes
+app.post("/signup", createUser);
+app.post("/signin", login);
 
 // Protected routes
+app.use(auth);
 app.use("/users", usersRouter);
 app.use("/items", clothingItemRouter);
 
@@ -44,8 +48,10 @@ app.use((err, req, res, next) => {
     .status(INTERNAL_SERVER_ERROR)
     .send({ message: "An error occurred on the server" });
 });
+
 const { PORT = 3001 } = process.env;
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening at port ${PORT}`);
 });

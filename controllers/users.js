@@ -10,7 +10,7 @@ const {
   UNAUTHORIZED,
   NOT_FOUND,
   OK,
-} = require("../utils/constants");
+} = require("../utils/errors");
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
