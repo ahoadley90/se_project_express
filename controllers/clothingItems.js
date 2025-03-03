@@ -1,131 +1,46 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BAD_REQUEST,
-  UNAUTHORIZED,
-  FORBIDDEN,
-  NOT_FOUND,
-  INTERNAL_SERVER_ERROR,
-  CREATED,
-  OK,
-} = require("../utils/errors");
+const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
 
-// Get all clothing items
-const getClothingItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
-    .then((items) => res.status(OK).send(items))
-    .catch(() =>
-      res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred on the server" })
-    );
+    .then((items) => res.send(items))
+    .catch(next);
 };
 
-// Create a new clothing item
-const createClothingItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
+
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((item) => res.status(CREATED).send(item))
+    .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({
-          message: "Invalid data passed to the methods for creating an item",
-        });
+        res.status(BAD_REQUEST).send({ message: err.message });
       } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
+        next(err);
       }
     });
 };
 
-// Delete a clothing item
-const deleteClothingItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
-  const userId = req.user._id;
+
   ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-      if (item.owner.toString() !== userId.toString()) {
+      if (item.owner.toString() !== req.user._id) {
         return res
           .status(FORBIDDEN)
-          .send({ message: "You don't have permission to delete this item" });
+          .send({ message: "You are not authorized to delete this item" });
       }
-      return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) => {
-        if (!deletedItem) {
-          return res.status(NOT_FOUND).send({ message: "Item not found" });
-        }
-        res.status(OK).send({ message: "Item deleted" });
-      });
+      return item.remove().then(() => res.send({ message: "Item deleted" }));
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item id" });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
-      }
-    });
-};
-
-// Like an item
-const likeItem = (req, res) => {
-  const { itemId } = req.params;
-  const userId = req.user._id;
-  ClothingItem.findByIdAndUpdate(
-    itemId,
-    { $addToSet: { likes: userId } },
-    { new: true }
-  )
-    .then((item) => {
-      if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
-      res.status(OK).send(item);
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item id" });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
-      }
-    });
-};
-
-// Unlike an item
-const unlikeItem = (req, res) => {
-  const { itemId } = req.params;
-  const userId = req.user._id;
-  ClothingItem.findByIdAndUpdate(
-    itemId,
-    { $pull: { likes: userId } },
-    { new: true }
-  )
-    .then((item) => {
-      if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
-      }
-      res.status(OK).send(item);
-    })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        res.status(BAD_REQUEST).send({ message: "Invalid item id" });
-      } else {
-        res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error occurred on the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports = {
-  getClothingItems,
-  createClothingItem,
-  deleteClothingItem,
-  likeItem,
-  unlikeItem,
+  getItems,
+  createItem,
+  deleteItem,
 };
