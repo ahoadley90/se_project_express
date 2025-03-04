@@ -25,5 +25,6 @@ module.exports = {
     "consistent-return": "off",
     "no-console": ["error", { allow: ["error"] }],
     "import/no-extraneous-dependencies": ["error", { devDependencies: true }],
+    "max-classes-per-file": ["error", 5],
   },
 };

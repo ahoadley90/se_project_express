@@ -4,9 +4,9 @@ const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 const {
   BadRequestError,
-  ConflictError,
   UnauthorizedError,
   NotFoundError,
+  ConflictError,
 } = require("../errors");
 
 const CREATED = 201; // Adding the CREATED constant

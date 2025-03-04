@@ -2,8 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
-const { NotFoundError } = require("./errors");
+const { NotFoundError } = require("./utils/errors");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
+const routes = require("./routes");
 
 const { PORT = 3001 } = process.env;
 const app = express();
@@ -18,8 +19,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 // Routes
-app.use("/items", require("./routes/clothingItems"));
-app.use("/users", require("./routes/users"));
+app.use(routes);
 
 app.use(errorLogger);
 app.use(errors());
