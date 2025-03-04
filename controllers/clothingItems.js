@@ -1,5 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
-const { BAD_REQUEST, NOT_FOUND, FORBIDDEN } = require("../utils/errors");
+const { BadRequestError, NotFoundError, ForbiddenError } = require("../errors");
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -11,10 +11,10 @@ const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
-    .then((item) => res.send(item))
+    .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        res.status(BAD_REQUEST).send({ message: err.message });
+        next(new BadRequestError("Invalid data provided"));
       } else {
         next(err);
       }
@@ -27,20 +27,74 @@ const deleteItem = (req, res, next) => {
   ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
+        throw new NotFoundError("Item not found");
       }
       if (item.owner.toString() !== req.user._id) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "You are not authorized to delete this item" });
+        throw new ForbiddenError("You are not authorized to delete this item");
       }
-      return item.remove().then(() => res.send({ message: "Item deleted" }));
+      return ClothingItem.deleteOne({ _id: itemId });
     })
-    .catch(next);
+    .then(() => res.send({ message: "Item deleted" }))
+    .catch((err) => {
+      if (err.name === "CastError") {
+        next(new BadRequestError("Invalid item id"));
+      } else {
+        next(err);
+      }
+    });
 };
 
+const addLike = (req, res, next) => {
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $addToSet: { likes: userId } },
+    { new: true }
+  )
+    .then((item) => {
+      if (!item) {
+        throw new NotFoundError("Clothing item not found");
+      }
+      res.send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        next(new BadRequestError("Invalid item id"));
+      } else {
+        next(err);
+      }
+    });
+};
+
+const removeLike = (req, res, next) => {
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: userId } },
+    { new: true }
+  )
+    .then((item) => {
+      if (!item) {
+        throw new NotFoundError("Clothing item not found");
+      }
+      res.send({ data: item });
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        next(new BadRequestError("Invalid item id"));
+      } else {
+        next(err);
+      }
+    });
+};
 module.exports = {
   getItems,
   createItem,
   deleteItem,
+  addLike,
+  removeLike,
 };

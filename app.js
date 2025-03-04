@@ -1,50 +1,41 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { errors } = require("celebrate");
+const { NotFoundError } = require("./errors");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { NOT_FOUND, INTERNAL_SERVER_ERROR } = require("./utils/errors");
-const routes = require("./routes/index");
 
+const { PORT = 3001 } = process.env;
 const app = express();
 
-// prettier-ignore
 mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-    useNewUrlParser: true,
-  })
-  // eslint-disable-next-line no-console
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => console.error("Error connecting to MongoDB:", error));
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 
-// Use the centralized routes
-app.use(routes);
+// Routes
+app.use("/items", require("./routes/clothingItems"));
+app.use("/users", require("./routes/users"));
 
-// 404 handler for undefined routes
-app.use((req, res) => {
-  res.status(NOT_FOUND).send({ message: "Requested resource not found" });
+app.use(errorLogger);
+app.use(errors());
+
+// 404 Not Found Error
+app.use((req, res, next) => {
+  next(new NotFoundError("Requested resource not found"));
 });
 
-// Error handling
-app.use(errorLogger);
-
-// Custom error handler
+// Error handler
 app.use((err, req, res, next) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
-  const { statusCode = INTERNAL_SERVER_ERROR, message } = err;
+  const { statusCode = 500, message } = err;
   res.status(statusCode).send({
-    message:
-      statusCode === INTERNAL_SERVER_ERROR
-        ? "An error occurred on the server"
-        : message,
+    message: statusCode === 500 ? "An error occurred on the server" : message,
   });
 });
-
-const { PORT = 3001 } = process.env;
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
