@@ -14,7 +14,14 @@ mongoose.connect("mongodb://localhost:27017/wtwr_db", {
   useUnifiedTopology: true,
 });
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(requestLogger);
 
