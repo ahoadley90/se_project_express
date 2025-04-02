@@ -10,5 +10,4 @@ router.post("/signin", login);
 // Protected routes
 router.use("/items", clothingItemsRoutes);
 router.use("/users", userRoutes);
-
 module.exports = router;
