@@ -6,7 +6,7 @@ const auth = require("../middlewares/auth");
 
 router.use(auth);
 
-router.get("/", getCurrentUser);
-router.patch("/", updateProfile);
+router.get("/me", getCurrentUser);
+router.patch("/me", updateProfile);
 
 module.exports = router;
