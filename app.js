@@ -5,7 +5,7 @@ const { errors } = require("celebrate");
 const routes = require("./routes");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const PORT = 3001;
 
 mongoose.connect("mongodb://localhost:27017/wtwr_db", {
   useNewUrlParser: true,
@@ -27,5 +27,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`App listening at port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
