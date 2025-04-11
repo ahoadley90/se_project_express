@@ -20,7 +20,9 @@ app.use(routes);
 app.use(errors());
 
 app.use((err, req, res, next) => {
+  console.error("Error:", err);
   const { statusCode = 500, message } = err;
+  console.error(`Status: ${statusCode}, Message: ${message}`);
   res.status(statusCode).send({
     message: statusCode === 500 ? "An error occurred on the server" : message,
   });
