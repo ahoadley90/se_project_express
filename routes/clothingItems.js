@@ -10,13 +10,13 @@ const auth = require("../middlewares/auth");
 
 // Public routes
 router.get("/", getItems);
-router.delete("/:itemId", deleteItem);
 
 // Apply auth middleware to all protected routes
 router.use(auth);
 
 // Protected routes
 router.post("/", createItem);
+router.delete("/:itemId", deleteItem);
 
 // New routes for adding and removing likes
 router.put("/:itemId/likes", addLike);

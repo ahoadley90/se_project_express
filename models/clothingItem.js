@@ -17,10 +17,8 @@ const clothingItemSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator: (v) =>
-        /^https?:\/\/(www\.)?[\w-]+\.[a-z]{2,}\/?[\w-._~:/?#[\]@!$&'()*+,;=.]+#?$/.test(
-          v
-        ),
-      message: "Invalid URL format",
+        /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/.test(v),
+      message: "Invalid URL",
     },
   },
   owner: {

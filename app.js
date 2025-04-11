@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const { errors } = require("celebrate");
 const routes = require("./routes");
+const errorHandler = require("./middlewares/error-handler");
 
 const app = express();
 const PORT = 3001;
@@ -20,11 +21,13 @@ app.use(routes);
 app.use(errors());
 
 app.use((err, req, res, next) => {
-  console.error("Error:", err);
+  console.error("Error details:", err);
+  console.error("Stack trace:", err.stack);
   const { statusCode = 500, message } = err;
-  console.error(`Status: ${statusCode}, Message: ${message}`);
   res.status(statusCode).send({
     message: statusCode === 500 ? "An error occurred on the server" : message,
+    error: err.toString(),
+    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
   });
 });
 

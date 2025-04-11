@@ -23,20 +23,31 @@ const createItem = (req, res, next) => {
 
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
+  const userId = req.user._id;
 
-  console.log(`Attempting to delete item with id: ${itemId}`);
+  console.log("Attempting to delete item:", itemId);
+  console.log("User ID:", userId);
 
-  ClothingItem.findByIdAndRemove(itemId)
+  ClothingItem.findById(itemId)
     .then((item) => {
+      console.log("Found item:", item);
       if (!item) {
-        console.log(`Item with id ${itemId} not found`);
         throw new NotFoundError("Item not found");
       }
-      console.log(`Item with id ${itemId} deleted successfully`);
-      res.send({ message: "Item deleted" });
+      if (item.owner.toString() !== userId.toString()) {
+        throw new ForbiddenError("You are not authorized to delete this item");
+      }
+      return ClothingItem.findByIdAndDelete(itemId);
+    })
+    .then((deletedItem) => {
+      console.log("Deleted item:", deletedItem);
+      if (!deletedItem) {
+        throw new NotFoundError("Item not found");
+      }
+      res.send({ message: "Item deleted", item: deletedItem });
     })
     .catch((err) => {
-      console.error(`Error deleting item with id ${itemId}:`, err);
+      console.error("Error in deleteItem:", err);
       next(err);
     });
 };
