@@ -8,13 +8,14 @@ const errorHandler = require("./middlewares/error-handler");
 const app = express();
 const PORT = 3001;
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect("mongodb://localhost:27017/wtwr_db", {});
 
 app.use(cors());
 app.use(express.json());
+
+app.get("/ping", (req, res) => {
+  res.status(200).json({ message: "Server is alive" });
+});
 
 app.use(routes);
 

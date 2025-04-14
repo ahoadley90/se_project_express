@@ -1,4 +1,5 @@
 const ClothingItem = require("../models/clothingItem");
+const { isValidObjectId } = require("mongoose");
 const { BadRequestError, NotFoundError, ForbiddenError } = require("../errors");
 
 const getItems = (req, res, next) => {
@@ -23,32 +24,33 @@ const createItem = (req, res, next) => {
 
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
-  const userId = req.user._id;
 
-  console.log("Attempting to delete item:", itemId);
-  console.log("User ID:", userId);
+  if (!isValidObjectId(itemId)) {
+    return next(new BadRequestError("Invalid item ID"));
+  }
 
   ClothingItem.findById(itemId)
     .then((item) => {
-      console.log("Found item:", item);
       if (!item) {
         throw new NotFoundError("Item not found");
       }
-      if (item.owner.toString() !== userId.toString()) {
+      if (item.owner.toString() !== req.user._id) {
         throw new ForbiddenError("You are not authorized to delete this item");
       }
-      return ClothingItem.findByIdAndDelete(itemId);
+      return ClothingItem.findByIdAndDelete(itemId); // Changed this line
     })
-    .then((deletedItem) => {
-      console.log("Deleted item:", deletedItem);
-      if (!deletedItem) {
+    .then((item) => {
+      if (!item) {
         throw new NotFoundError("Item not found");
       }
-      res.send({ message: "Item deleted", item: deletedItem });
+      res.send({ message: "Item deleted", item });
     })
     .catch((err) => {
-      console.error("Error in deleteItem:", err);
-      next(err);
+      if (err.name === "CastError") {
+        next(new BadRequestError("Invalid item id"));
+      } else {
+        next(err);
+      }
     });
 };
 
