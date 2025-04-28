@@ -6,9 +6,12 @@ const routes = require("./routes");
 const errorHandler = require("./middlewares/error-handler");
 
 const app = express();
-const PORT = 3001;
+const { PORT = 3001 } = process.env;
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db", {});
+mongoose.connect("mongodb://localhost:27017/wtwr_db", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 app.use(cors());
 app.use(express.json());
@@ -17,20 +20,14 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "Server is alive" });
 });
 
+// your routes
 app.use(routes);
 
+// Celebrate error handler
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  console.error("Error details:", err);
-  console.error("Stack trace:", err.stack);
-  const { statusCode = 500, message } = err;
-  res.status(statusCode).send({
-    message: statusCode === 500 ? "An error occurred on the server" : message,
-    error: err.toString(),
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
-});
+//  centralized error handler
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

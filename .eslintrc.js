@@ -2,12 +2,14 @@ module.exports = {
   env: {
     es2021: true,
     node: true,
+    es6: true,
   },
   extends: ["eslint:recommended", "airbnb-base", "prettier"],
   overrides: [
     {
       env: {
         node: true,
+        es6: true,
       },
       files: [".eslintrc.{js,cjs}"],
       parserOptions: {

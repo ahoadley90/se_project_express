@@ -9,4 +9,5 @@ module.exports = (err, req, res, next) => {
         ? "An error occurred on the server"
         : message,
   });
+  if (next) next(err);
 };

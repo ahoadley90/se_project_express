@@ -37,7 +37,7 @@ const deleteItem = (req, res, next) => {
       if (item.owner.toString() !== req.user._id) {
         throw new ForbiddenError("You are not authorized to delete this item");
       }
-      return ClothingItem.findByIdAndDelete(itemId); // Changed this line
+      return ClothingItem.findByIdAndDelete(itemId);
     })
     .then((item) => {
       if (!item) {
@@ -45,13 +45,7 @@ const deleteItem = (req, res, next) => {
       }
       res.send({ message: "Item deleted", item });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new BadRequestError("Invalid item id"));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next); // This passes any error to the centralized error handler
 };
 
 const addLike = (req, res, next) => {
