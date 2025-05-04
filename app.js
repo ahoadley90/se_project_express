@@ -24,6 +24,12 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "Server is alive" });
 });
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // your routes
 app.use(routes);
 

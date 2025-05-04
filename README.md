@@ -61,3 +61,12 @@ Managing environment variables and database connections
 ### Testing
 
 Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
+
+## Accessing the Application
+
+The application is deployed and can be accessed at the following URLs:
+
+- Frontend: https://wtwrproject.twilightparadox.com
+- API: https://api.wtwrproject.twilightparadox.com
+
+Please note that the API is not meant to be accessed directly in a browser, but is used by the frontend application for data operations.
