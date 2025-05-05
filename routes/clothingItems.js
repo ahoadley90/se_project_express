@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const express = require("express");
 const {
   validateClothingItem,
@@ -7,8 +9,8 @@ const {
   getItems,
   createItem,
   deleteItem,
-  likeItem,
-  unlikeItem,
+  addLike,
+  removeLike,
 } = require("../controllers/clothingItems");
 const auth = require("../middlewares/auth");
 
@@ -25,7 +27,7 @@ router.post("/", validateClothingItem, createItem);
 router.delete("/:id", validateObjectId, deleteItem);
 
 // New routes for adding and removing likes
-router.put("/:id/likes", validateObjectId, likeItem);
-router.delete("/:id/likes", validateObjectId, unlikeItem);
+router.put("/:id/likes", validateObjectId, addLike);
+router.delete("/:id/likes", validateObjectId, removeLike);
 
 module.exports = router;

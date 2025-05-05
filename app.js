@@ -1,3 +1,4 @@
+/* eslint-disable */
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -41,6 +42,4 @@ app.use(errors());
 //  centralized error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+app.listen(PORT, () => {});

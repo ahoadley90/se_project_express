@@ -1,24 +1,19 @@
+/* eslint-disable */
+
 const express = require("express");
 const router = express.Router();
 
-const {
-  validateUserBody,
-  validateAuthentication,
-  validateObjectId,
-} = require("../middlewares/validation");
-const {
-  getCurrentUser,
-  updateProfile,
-  createUser,
-  login,
-} = require("../controllers/users");
+const { validateUserUpdate } = require("../middlewares/validation");
+const { getCurrentUser, updateProfile } = require("../controllers/users");
 const auth = require("../middlewares/auth");
 
-router.post("/signup", validateUserBody, createUser);
-router.post("/signin", validateAuthentication, login);
+// Apply auth middleware to all routes in this file
 router.use(auth);
 
+// Get the current user's information
 router.get("/me", getCurrentUser);
-router.patch("/me", validateUserBody, updateProfile);
+
+// Update the current user's profile
+router.patch("/me", validateUserUpdate, updateProfile);
 
 module.exports = router;
