@@ -2,7 +2,6 @@
 
 const express = require("express");
 const router = express.Router();
-
 const { validateUserUpdate } = require("../middlewares/validation");
 const { getCurrentUser, updateProfile } = require("../controllers/users");
 const auth = require("../middlewares/auth");
