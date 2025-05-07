@@ -11,10 +11,10 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-mongoose.connect("mongodb://localhost:27017/wtwr_db", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const MONGODB_URI =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/wtwr_db";
+
+mongoose.connect(MONGODB_URI);
 
 app.use(cors());
 app.use(express.json());
