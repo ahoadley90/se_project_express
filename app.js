@@ -9,14 +9,27 @@ const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
-const { PORT = 3001 } = process.env;
+const { PORT = 3001, NODE_ENV } = process.env;
 
 const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/wtwr_db";
+  process.env.MONGODB_URI ||
+  (NODE_ENV === "production"
+    ? "mongodb://production_uri"
+    : "mongodb://localhost:27017/wtwr_db");
 
 mongoose.connect(MONGODB_URI);
 
-app.use(cors());
+// CORS for your production domain
+app.use(
+  cors({
+    origin: [
+      "https://wtwrproject.twilightparadox.com",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.use(requestLogger);
@@ -42,4 +55,6 @@ app.use(errors());
 //  centralized error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {});
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
