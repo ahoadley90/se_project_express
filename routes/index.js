@@ -6,6 +6,7 @@ const {
   validateUserBody,
   validateAuthentication,
 } = require("../middlewares/validation");
+const { NotFoundError } = require("../utils/errors"); // Import NotFoundError
 
 // Public routes
 router.post("/signup", validateUserBody, createUser);
@@ -16,8 +17,8 @@ router.use("/items", clothingItemsRoutes);
 router.use("/users", userRoutes);
 
 // Middleware for handling unknown routes
-router.use((req, res) => {
-  res.status(404).send({ message: "Requested resource not found" });
+router.use((req, res, next) => {
+  next(new NotFoundError("Requested resource not found"));
 });
 
 module.exports = router;
