@@ -21,11 +21,9 @@ mongoose.connect(MONGODB_URI);
 // CORS for your production domain
 app.use(
   cors({
-    origin: [
-      "https://wtwrproject.twilightparadox.com",
-      "http://localhost:3000",
-    ],
-    credentials: true,
+    origin: "https://wtwrproject.twilightparadox.com",
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
