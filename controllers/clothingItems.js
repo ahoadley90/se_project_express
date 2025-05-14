@@ -53,6 +53,7 @@ const deleteItem = (req, res, next) => {
 // eslint-disable-next-line no-console
 console.log("This is an important log");
 const addLike = (req, res, next) => {
+  console.log("addLike function called");
   const { id } = req.params;
   const userId = req.user._id;
 

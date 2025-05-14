@@ -8,6 +8,8 @@ const {
 const auth = require("../middlewares/auth");
 
 console.log("Controllers:", controllers);
+console.log("addLike function:", controllers.addLike);
+console.log("All controllers:", controllers);
 
 const router = express.Router();
 
