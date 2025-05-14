@@ -11,10 +11,7 @@ const app = express();
 const { PORT = 3001, NODE_ENV } = process.env;
 
 const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  (NODE_ENV === "production"
-    ? "mongodb://production_uri"
-    : "mongodb://localhost:27017/wtwr_db");
+  process.env.MONGODB_URI || "mongodb://localhost:27017/wtwr_db";
 
 console.log(
   "Attempting to connect to MongoDB at:",
