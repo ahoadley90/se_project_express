@@ -16,6 +16,12 @@ router.post("/signin", validateAuthentication, login);
 router.use("/items", clothingItemRoutes);
 router.use("/users", userRoutes);
 
+// Middleware for logging requests
+router.use((req, res, next) => {
+  console.log(`Received ${req.method} request for ${req.url}`);
+  next();
+});
+
 // Middleware for handling unknown routes
 router.use((req, res, next) => {
   next(new NotFoundError("Requested resource not found"));
