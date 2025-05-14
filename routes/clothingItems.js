@@ -7,10 +7,7 @@ const {
 } = require("../middlewares/validation");
 const auth = require("../middlewares/auth");
 
-console.log(
-  "Controllers:",
-  Object.keys(require("../controllers/clothingItems"))
-);
+console.log("Controllers:", controllers);
 
 const router = express.Router();
 
