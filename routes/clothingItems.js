@@ -13,6 +13,14 @@ console.log("All controllers:", controllers);
 
 const router = express.Router();
 
+// Log all requests
+router.use((req, res, next) => {
+  console.log(
+    `[clothingItems.js] Received ${req.method} request for ${req.originalUrl}`
+  );
+  next();
+});
+
 // Public routes
 router.get("/", controllers.getItems);
 

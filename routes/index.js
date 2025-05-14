@@ -10,7 +10,14 @@ const { NotFoundError } = require("../utils/errors");
 
 // Middleware for logging requests
 router.use((req, res, next) => {
-  console.log(`Received ${req.method} request for ${req.originalUrl}`);
+  console.log(
+    `[index.js] Received ${req.method} request for ${req.originalUrl}`
+  );
+  next();
+});
+
+router.use((req, res, next) => {
+  console.log("Request reached index.js router");
   next();
 });
 
