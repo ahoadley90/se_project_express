@@ -18,7 +18,7 @@ router.use("/users", userRoutes);
 
 // Middleware for logging requests
 router.use((req, res, next) => {
-  console.log(`Received ${req.method} request for ${req.url}`);
+  console.log(`Received ${req.method} request for ${req.originalUrl}`);
   next();
 });
 
