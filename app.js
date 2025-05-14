@@ -25,7 +25,11 @@ mongoose.connect(MONGODB_URI, {
   serverSelectionTimeoutMS: 5000
 })
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:");
+    console.error(JSON.stringify(err, null, 2));
+    console.error(err.stack);
+  });
 
 // CORS for your production domain
 app.use(
