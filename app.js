@@ -11,7 +11,7 @@ const app = express();
 const { PORT = 3001, NODE_ENV } = process.env;
 
 const MONGODB_URI =
-  "mongodb://akimmets:Ek8Ek8Ek8@ac-yvqjvxr-shard-00-00.yvqjvxr.mongodb.net:27017,ac-yvqjvxr-shard-00-01.yvqjvxr.mongodb.net:27017,ac-yvqjvxr-shard-00-02.yvqjvxr.mongodb.net:27017/wtwr_db?ssl=true&replicaSet=atlas-yvqjvxr-shard-0&authSource=admin&retryWrites=true&w=majority";
+  "mongodb+srv://akimmets:Ek8Ek8Ek8@cluster0.yvqjvxr.mongodb.net/wtwr_db?retryWrites=true&w=majority";
 
 console.log(
   "Attempting to connect to MongoDB at:",
@@ -19,17 +19,9 @@ console.log(
 );
 
 //prettier-ignore
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000
-})
+mongoose.connect(MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:");
-    console.error(JSON.stringify(err, null, 2));
-    console.error(err.stack);
-  });
+  .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // CORS for your production domain
 app.use(
