@@ -1,8 +1,8 @@
 /* eslint-disable */
 console.log({ getItems, createItem, deleteItem, addLike, removeLike });
 const controllers = require("../controllers/clothingItems");
-console.log("Controllers:", Object.keys(controllers));
-console.log("addLike:", typeof controllers.addLike);
+console.log("Controllers:", controllers);
+console.log("addLike:", controllers.addLike);
 
 const express = require("express");
 const {
@@ -16,6 +16,8 @@ const {
   addLike,
   removeLike,
 } = require("../controllers/clothingItems");
+console.log("Destructured addLike:", addLike);
+
 const auth = require("../middlewares/auth");
 
 const router = express.Router();
@@ -31,7 +33,7 @@ router.post("/", validateClothingItem, createItem);
 router.delete("/:id", validateObjectId, deleteItem);
 
 // New routes for adding and removing likes
-router.put("/:id/likes", validateObjectId, controllers.addLike);
+router.put("/:id/likes", validateObjectId, addLike);
 router.delete("/:id/likes", validateObjectId, removeLike);
 
 module.exports = router;
