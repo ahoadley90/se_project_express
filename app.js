@@ -8,10 +8,13 @@ const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
-const { PORT = 3001, NODE_ENV } = process.env;
+const { PORT = 3001, NODE_ENV, MONGODB_URI } = process.env;
 
-const MONGODB_URI =
-  "mongodb://akimmets:Ek8Ek8Ek8@3.216.156.173:27017,3.216.156.174:27017,3.216.156.175:27017/wtwr_db?ssl=true&replicaSet=atlas-yvqjvxr-shard-0&authSource=admin&retryWrites=true&w=majority";
+// Ensure MONGODB_URI is set
+if (!MONGODB_URI) {
+  console.error("MONGODB_URI is not set in environment variables");
+  process.exit(1);
+}
 
 console.log(
   "Attempting to connect to MongoDB at:",
@@ -19,15 +22,25 @@ console.log(
 );
 
 //prettier-ignore
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+  })
   .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
+    process.exit(1);
+  });
 
-// CORS for your production domain
+// CORS for production domain
 app.use(
   cors({
-    origin: "https://wtwrproject.twilightparadox.com",
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+    origin:
+      NODE_ENV === "production"
+        ? "https://wtwrproject.twilightparadox.com"
+        : "*",
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -41,11 +54,13 @@ app.get("/ping", (req, res) => {
   res.status(200).json({ message: "Server is alive" });
 });
 
-app.get("/crash-test", () => {
-  setTimeout(() => {
-    throw new Error("Server will crash now");
-  }, 0);
-});
+if (NODE_ENV !== "production") {
+  app.get("/crash-test", () => {
+    setTimeout(() => {
+      throw new Error("Server will crash now");
+    }, 0);
+  });
+}
 
 app.get("/", (req, res) => {
   res.send("WTWR API is running");
@@ -59,9 +74,15 @@ app.use(errorLogger);
 // Celebrate error handler
 app.use(errors());
 
-//  centralized error handler
+// centralized error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log("info", `Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
+});
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Application specific logging, throwing an error, or other logic here
 });
