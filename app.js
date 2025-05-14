@@ -11,7 +11,7 @@ const app = express();
 const { PORT = 3001, NODE_ENV } = process.env;
 
 const MONGODB_URI =
-  "mongodb+srv://akimmets:Ek8Ek8Ek8@cluster0.yvqjvxr.mongodb.net/wtwr_db?retryWrites=true&w=majority";
+  "mongodb://akimmets:Ek8Ek8Ek8@3.216.156.173:27017,3.216.156.174:27017,3.216.156.175:27017/wtwr_db?ssl=true&replicaSet=atlas-yvqjvxr-shard-0&authSource=admin&retryWrites=true&w=majority";
 
 console.log(
   "Attempting to connect to MongoDB at:",
@@ -19,7 +19,7 @@ console.log(
 );
 
 //prettier-ignore
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_URI)
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Error connecting to MongoDB:", err));
 
