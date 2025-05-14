@@ -67,13 +67,7 @@ const addLike = (req, res, next) => {
       }
       res.send({ data: item });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new BadRequestError("Invalid item id"));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const removeLike = (req, res, next) => {
@@ -91,13 +85,7 @@ const removeLike = (req, res, next) => {
       }
       res.send({ data: item });
     })
-    .catch((err) => {
-      if (err.name === "CastError") {
-        next(new BadRequestError("Invalid item id"));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 module.exports = {
   getItems,
