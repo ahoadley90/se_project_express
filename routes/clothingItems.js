@@ -1,4 +1,5 @@
 /* eslint-disable */
+console.log({ getItems, createItem, deleteItem, addLike, removeLike });
 
 const express = require("express");
 const {

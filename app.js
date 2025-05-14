@@ -24,6 +24,7 @@ app.use(
     origin: "https://wtwrproject.twilightparadox.com",
     methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
