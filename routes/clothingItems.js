@@ -1,12 +1,6 @@
 /* eslint-disable */
 const express = require("express");
-const {
-  getItems,
-  createItem,
-  deleteItem,
-  addLike,
-  removeLike,
-} = require("../controllers/clothingItems");
+const controllers = require("../controllers/clothingItems");
 const {
   validateClothingItem,
   validateObjectId,
@@ -21,17 +15,17 @@ console.log(
 const router = express.Router();
 
 // Public routes
-router.get("/", getItems);
+router.get("/", controllers.getItems);
 
 // Apply auth middleware to all protected routes
 router.use(auth);
 
 // Protected routes
-router.post("/", validateClothingItem, createItem);
-router.delete("/:id", validateObjectId, deleteItem);
+router.post("/", validateClothingItem, controllers.createItem);
+router.delete("/:id", validateObjectId, controllers.deleteItem);
 
 // New routes for adding and removing likes
-router.put("/:id/likes", validateObjectId, addLike);
-router.delete("/:id/likes", validateObjectId, removeLike);
+router.put("/:id/likes", validateObjectId, controllers.addLike);
+router.delete("/:id/likes", validateObjectId, controllers.removeLike);
 
 module.exports = router;
