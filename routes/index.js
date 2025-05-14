@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const clothingItemsRoutes = require("./clothingItems");
+const clothingItemRoutes = require("./clothingItems");
 const userRoutes = require("./users");
 const { createUser, login } = require("../controllers/users");
 const {
@@ -13,7 +13,7 @@ router.post("/signup", validateUserBody, createUser);
 router.post("/signin", validateAuthentication, login);
 
 // Protected routes
-router.use("/items", clothingItemsRoutes);
+router.use("/items", clothingItemRoutes);
 router.use("/users", userRoutes);
 
 // Middleware for handling unknown routes
