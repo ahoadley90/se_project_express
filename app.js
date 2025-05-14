@@ -16,7 +16,18 @@ const MONGODB_URI =
     ? "mongodb://production_uri"
     : "mongodb://localhost:27017/wtwr_db");
 
-mongoose.connect(MONGODB_URI);
+console.log(
+  "Attempting to connect to MongoDB at:",
+  MONGODB_URI.replace(/\/\/.*@/, "//****:****@")
+);
+
+//prettier-ignore
+mongoose.connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Error connecting to MongoDB:", err));
 
 // CORS for your production domain
 app.use(
