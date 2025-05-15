@@ -67,7 +67,7 @@ app.get("/", (req, res) => {
 });
 
 // routes
-app.use("/api", routes);
+app.use("/", routes);
 
 app.use(errorLogger);
 
@@ -84,5 +84,4 @@ app.listen(PORT, () => {
 // Handle unhandled promise rejections
 process.on("unhandledRejection", (reason, promise) => {
   console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Application specific logging, throwing an error, or other logic here
 });

@@ -29,18 +29,6 @@ router.post("/signin", validateAuthentication, login);
 router.use("/items", clothingItemRoutes);
 router.use("/users", userRoutes);
 
-// Error handling middleware
-router.use((err, req, res, next) => {
-  console.error("Error:", err); // Log the full error
-  if (err instanceof NotFoundError) {
-    res.status(404).json({ error: err.message });
-  } else {
-    res
-      .status(500)
-      .json({ error: "Internal Server Error", details: err.message });
-  }
-});
-
 // Middleware for handling unknown routes
 router.use((req, res, next) => {
   next(new NotFoundError("Requested resource not found"));
