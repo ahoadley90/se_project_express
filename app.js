@@ -39,7 +39,7 @@ app.use(
     origin:
       NODE_ENV === "production"
         ? "https://wtwrproject.twilightparadox.com"
-        : "*",
+        : "http://localhost:3000",
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
