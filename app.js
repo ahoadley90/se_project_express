@@ -8,7 +8,8 @@ const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
-const { PORT = 3001, NODE_ENV, MONGODB_URI } = process.env;
+const { PORT = 3001, NODE_ENV } = process.env;
+const MONGODB_URI = "mongodb://localhost:27017/wtwr_db";
 
 // Ensure MONGODB_URI is set
 if (!MONGODB_URI) {
@@ -27,9 +28,9 @@ mongoose.connect(MONGODB_URI, {
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
   })
-  .then(() => console.log("Connected to MongoDB"))
+  .then(() => console.log("Connected to local MongoDB"))
   .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
+    console.error("Error connecting to local MongoDB:", err);
     process.exit(1);
   });
 
